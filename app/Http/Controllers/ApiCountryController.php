@@ -54,14 +54,91 @@ class ApiCountryController extends Controller
     }
 
     public function index1()
+{
+    // Fetch country_name, country_photo, and country_desc
+    $countries = Country::select('country_name', 'country_photo', 'country_desc')
+        ->get()
+        ->groupBy('country_name');
+
+    $formattedCountries = $countries->map(function ($photos, $countryName) {
+        // Extract the first country description (if exists) from the group
+        $countryDesc = $photos->first()->country_desc;
+
+        // Extract all photos for the country
+        $allPhotos = $photos->pluck('country_photo')->filter()->flatMap(function ($photo) {
+            // Decode JSON string into an array if multiple photos exist
+            $decodedPhotos = json_decode($photo, true);
+            if (is_array($decodedPhotos)) {
+                return $decodedPhotos; // Return array of photos
+            }
+            return [$photo]; // Return single photo in an array
+        });
+
+        // Initialize the response structure
+        $data = [
+            'country_name' => $countryName,
+            'country_desc' => $countryDesc, // Add the country description
+        ];
+
+        // Check if there are any photos
+        if ($allPhotos->isEmpty()) {
+            $data['country_photos'] = null; // No photos available, return null
+        } else {
+            // Map the photos to their full URLs
+            $data['country_photos'] = $allPhotos->map(function ($photo) {
+                return asset('storage/' . $photo); // Construct the full URL for each photo
+            });
+        }
+
+        return $data;
+    });
+
+    // Return the formatted data
+    return $this->success($formattedCountries->values());
+}
+
+    // public function index2($country_name)
+    // {
+    //     // Find the country by its name
+    //     $country = Country::where('country_name', $country_name)->first();
+    //     // Check if the country exists
+    //     if (!$country) {
+    //         return response()->json(['msg' => 'Country not found'], 404);
+    //     }
+    //     // Assuming 'event_name' is a comma-separated string in your current schema
+    //     $city = Country::where('country_name', $country_name)
+    //         ->pluck('city_name')
+    //         ->filter(); // Use filter to remove null/empty values
+    //     // Format the response
+    //     $response = [
+    //         'city_name' => $city, // The list of event names
+    //     ];
+    //   return $this->success($response);
+
+    // }
+    public function index2($country_name)
     {
-        $countries = Country::select('country_name', 'country_photo')
+        // Fetch countries based on the given country name
+        $countries = Country::where('country_name', $country_name)
+            ->select('country_name', 'country_photo', 'country_desc', 'city_name')
             ->get()
             ->groupBy('country_name');
 
-        $formattedCountries = $countries->map(function ($photos, $countryName) {
+        // Check if the country exists
+        if ($countries->isEmpty()) {
+            return response()->json(['msg' => 'Country not found'], 404);
+        }
+
+        // Format the grouped data
+        $formattedData = $countries->map(function ($countryGroup, $countryName) {
+            // Extract the first country description (assuming it's the same for all records in the group)
+            $countryDesc = $countryGroup->first()->country_desc;
+
+            // Collect all unique city names
+            $cityNames = $countryGroup->pluck('city_name')->unique()->filter();
+
             // Extract all photos for the country
-            $allPhotos = $photos->pluck('country_photo')->filter()->flatMap(function ($photo) {
+            $allPhotos = $countryGroup->pluck('country_photo')->filter()->flatMap(function ($photo) {
                 // Decode JSON string into an array if multiple photos exist
                 $decodedPhotos = json_decode($photo, true);
                 if (is_array($decodedPhotos)) {
@@ -70,47 +147,21 @@ class ApiCountryController extends Controller
                 return [$photo]; // Return single photo in an array
             });
 
-            // Initialize the response structure
-            $data = [
+            // Format the response
+            return [
                 'country_name' => $countryName,
-            ];
-
-            // Check if there are any photos
-            if ($allPhotos->isEmpty()) {
-                $data['country_photos'] = null; // No photos available, return null
-            } else {
-                // Map the photos to their full URLs
-                $data['country_photos'] = $allPhotos->map(function ($photo) {
+                'country_desc' => $countryDesc,
+                'city_names' => $cityNames->values(), // Return city names as an array
+                'country_photos' => $allPhotos->isEmpty() ? null : $allPhotos->map(function ($photo) {
                     return asset('storage/' . $photo); // Construct the full URL for each photo
-                });
-            }
-
-            return $data;
+                }),
+            ];
         });
 
         // Return the formatted data
-        return $this->success($formattedCountries->values());
+        return $this->success($formattedData->values());
     }
 
-    public function index2($country_name)
-    {
-        // Find the country by its name
-        $country = Country::where('country_name', $country_name)->first();
-        // Check if the country exists
-        if (!$country) {
-            return response()->json(['msg' => 'Country not found'], 404);
-        }
-        // Assuming 'event_name' is a comma-separated string in your current schema
-        $city = Country::where('country_name', $country_name)
-            ->pluck('city_name')
-            ->filter(); // Use filter to remove null/empty values
-        // Format the response
-        $response = [
-            'city_name' => $city, // The list of event names
-        ];
-      return $this->success($response);
-
-    }
 
 
     public function index3($city_name)
@@ -119,7 +170,6 @@ class ApiCountryController extends Controller
         $countries = Country::where('city_name', $city_name)
         ->select('country_name', 'city_name', 'event_photo')
         ->get();
-
     // Format the countries data
     $formattedCountries = $countries->map(function ($country) {
         // Extract and handle event photos
@@ -136,6 +186,11 @@ class ApiCountryController extends Controller
         return [
             'country_name' => $country->country_name,
             'city_name' => $country->city_name,
+            'event_name' => $country->event_name,
+            'date' => $country->date,
+            'desc_event' => $country->desc_event,
+            'latitude' => $country->latitude,
+            'longitude' => $country->longitude,
             'event_photos' => $allPhotos->isEmpty()
                 ? null // If no photos, return null
                 : $allPhotos->map(function ($photo) {
