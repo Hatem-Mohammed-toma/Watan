@@ -7,5 +7,8 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
-    ],
+    ],build: {
+        outDir: 'dist', // Ensure this is set to the desired directory
+    },
 });
+
