@@ -90,18 +90,7 @@ class ApiCommentController extends Controller
     }
     public function updateStatus(Request $request, $status, $id)
     {
-        // Validate the status parameter directly from the route
-        // $validator = Validator::make(['status' => $status], [
-        //     'status' => 'required|string|in:accepted,canceled',
-        // ]);
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         "errors" => $validator->errors(),
-        //         "status" => 422
-        //     ], 422);
-        // }
-
-        // Find the comment by its ID
+       
         $comment = Comment::find($id);
         if (!$comment) {
             return $this->error('Operation failed',400,'Comment not found');
