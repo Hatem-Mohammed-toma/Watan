@@ -97,25 +97,25 @@ class ApiCountryController extends Controller
     return $this->success($formattedCountries->values());
 }
 
-    // public function index2($country_name)
-    // {
-    //     // Find the country by its name
-    //     $country = Country::where('country_name', $country_name)->first();
-    //     // Check if the country exists
-    //     if (!$country) {
-    //         return response()->json(['msg' => 'Country not found'], 404);
-    //     }
-    //     // Assuming 'event_name' is a comma-separated string in your current schema
-    //     $city = Country::where('country_name', $country_name)
-    //         ->pluck('city_name')
-    //         ->filter(); // Use filter to remove null/empty values
-    //     // Format the response
-    //     $response = [
-    //         'city_name' => $city, // The list of event names
-    //     ];
-    //   return $this->success($response);
+    public function indexsabry($country_name)
+    {
+        // Find the country by its name
+        $country = Country::where('country_name', $country_name)->first();
+        // Check if the country exists
+        if (!$country) {
+            return response()->json(['msg' => 'Country not found'], 404);
+        }
+        // Assuming 'event_name' is a comma-separated string in your current schema
+        $city = Country::where('country_name', $country_name)
+            ->pluck('city_name')
+            ->filter(); // Use filter to remove null/empty values
+        // Format the response
+        $response = [
+            'city_name' => $city, // The list of event names
+        ];
+      return $this->success($response);
 
-    // }
+    }
     public function index2($country_name)
     {
         // Fetch countries based on the given country name

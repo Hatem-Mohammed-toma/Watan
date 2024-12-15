@@ -109,7 +109,8 @@ Route::controller(ApiProductController::class)->group(function(){
 Route::controller(ApiCountryController::class)->group(function () {
     Route::post('create_country','store'); // Store a new country/event
      Route::get('countries/page1','index1');
-     Route::get('countries/page2/{country_name}','index2'); // List all countries/events
+     Route::get('countries/page2/{country_name}','index2'); // List all countries/events web
+     Route::get('countries/page4/{country_name}','indexsabry'); // List all countries/eventsvsabry
      Route::get('countries/page3/{city_name}','index3'); // List all countries/events
 
      Route::put('/events/{id}','update');   // Update event with old photo deletion
