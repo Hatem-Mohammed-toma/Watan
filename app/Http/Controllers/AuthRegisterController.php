@@ -34,7 +34,7 @@ use  ResponseGlobal;
         return $this->success($user);
     }
 
-    public function name(){
-        return "mustafa" ;
-    }
+    // public function name(){
+    //     return "mustafa" ;
+    // }
 }

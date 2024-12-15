@@ -13,8 +13,8 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://your.url.from.vercel.app",
-        "APP_KEY":" base64:xAAS1vxvMbvnCrdAyrhUy2JbHvkw6YHFI4nwkn0S74Q=",
+        "APP_URL":"https://hatemfinal.vercel.app",
+        "APP_KEY":"base64:xAAS1vxvMbvnCrdAyrhUy2JbHvkw6YHFI4nwkn0S74Q=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
