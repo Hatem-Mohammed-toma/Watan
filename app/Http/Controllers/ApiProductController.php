@@ -104,39 +104,6 @@ use ResponseGlobal ;
     return $this->success($productsData);
 }
 
-
-
-// public function getProductsByType($productType)
-// {
-//     // Fetch products by type (case-insensitive) and group by name
-//     $products = Product::whereRaw('LOWER(product_type) = ?', [strtolower($productType)])
-//         ->get()
-//         ->groupBy('name');
-
-//     // Check if any products are found
-//     if ($products->isEmpty()) {
-//         return response()->json(['msg' => 'No products found for this type'], 404);
-//     }
-
-//     // Prepare grouped products data
-//     $groupedProducts = $products->map(function ($group) {
-//         return $group->map(function ($product) {
-//             return [
-//                 'id' => $product->id,
-//                 'price' => $product->price,
-//                 'image' => $product->image ? asset('storage/' . $product->image) : null, // Include the image URL if it exists
-//                 'product_type' => $product->product_type,
-//             ];
-//         });
-//     });
-
-//     // Return the response
-//     return $this->success([
-//         'product_type' => $productType,
-//         'products' => $groupedProducts,
-//     ]);
-// }
-
 public function getProductsByType($productType)
 {
     // Fetch distinct products by name and type (case-insensitive)
@@ -164,6 +131,5 @@ public function getProductsByType($productType)
     // Return the response
     return $this->success($productsData);
 }
-
 
 }

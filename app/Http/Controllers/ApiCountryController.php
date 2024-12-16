@@ -201,83 +201,7 @@ class ApiCountryController extends Controller
 
     // Return the formatted data
     return $this->success($formattedCountries);
-
-         // Fetch all events filtered by city name
-    // $events = Country::where('city_name', $city_name)->get();
-    // if ($events->isEmpty()) {
-    //     return $this->error('Operation failed', 400, 'No events found in this city');
-    // }
-
-    // // Group events by all fields except 'event_photo'
-    // $groupedEvents = $events->groupBy(function ($event) {
-    //     return json_encode([
-    //         'event_name' => $event->event_name,
-    //         'country_name' => $event->country_name,
-    //         'city_name' => $event->city_name,
-    //         'date' => $event->date,
-    //         'desc_event' => $event->desc_event,
-    //         'latitude' => $event->latitude,
-    //         'longitude' => $event->longitude,
-    //     ]);
-    // });
-
-    // // Format the grouped response
-    // $formattedResponse = $groupedEvents->map(function ($events, $key) {
-    //     // Decode the grouping key back to its original data
-    //     $data = json_decode($key, true);
-
-    //     // Collect all photos for the group
-    //     $allPhotos = $events->pluck('event_photo')->filter();
-
-    //     // Check if there are photos
-    //     if ($allPhotos->isEmpty()) {
-    //         $data['event_photos'] = null;  // If no photos, return null
-    //     } else {
-    //         // Map the photos to their full URLs
-    //         $data['event_photos'] = $allPhotos->map(function ($photo) {
-    //             return asset('storage/' . $photo); // Full URL for each photo
-    //         });
-    //     }
-    //     return $data;
-    // });
-    // return $this->success($formattedResponse->values()); // Use values() to reset keys
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public function update(Request $request, $id)
     {
@@ -316,7 +240,6 @@ class ApiCountryController extends Controller
             $countryPhotoName = Storage::putFile("country_photos", $request->country_photo);
             $event->country_photo = $countryPhotoName;
         }
-
         // Delete old event photo if a new one is being uploaded
         if ($request->hasFile('event_photo')) {
             if ($event->event_photo) {
@@ -325,7 +248,6 @@ class ApiCountryController extends Controller
             $eventPhotoName = Storage::putFile("event_photos", $request->event_photo);
             $event->event_photo = $eventPhotoName;
         }
-
         // Update the event details
         $event->country_name = $request->country_name;
         $event->city_name = $request->city_name;
@@ -334,10 +256,8 @@ class ApiCountryController extends Controller
         $event->desc_event = $request->desc_event;
         $event->latitude = $request->latitude;
         $event->longitude = $request->longitude;
-
         // Save the updated event
         $event->save();
-
         // Response
         return response()->json([
             'message' => 'Event updated successfully',
@@ -355,7 +275,6 @@ class ApiCountryController extends Controller
     if (!$country) {
         return response()->json(['message' => 'Country not found'], 404);
     }
-
     // Delete country photos if they exist
     if ($country->country_photo) {
         $countryPhotos = json_decode($country->country_photo, true);
@@ -364,7 +283,6 @@ class ApiCountryController extends Controller
             Storage::delete($photo);
         }
     }
-
     // Delete event photos if they exist
     if ($country->event_photo) {
         $eventPhotos = json_decode($country->event_photo, true);
@@ -373,31 +291,12 @@ class ApiCountryController extends Controller
             Storage::delete($photo);
         }
     }
-
     // Delete the country from the database
     $country->delete();
-
     // Return success response
     return response()->json([
         'message' => 'Country and associated photos deleted successfully'
     ], 200);
 }
-
-
-    public function linkAi(Request $request) {
-        // Retrieve the query parameters from the request
-        $query = $request->query();
-
-        // Define the Flask API URL
-        $flaskUrl = 'http://your-flask-api.com/endpoint'; // Replace with your actual Flask API URL
-
-        // Send the POST request to the Flask API with the query data
-        $response = Http::post($flaskUrl, $query);
-
-        // Return the response from the Flask API
-        return $response->json();
-    }
-
-
 
 }

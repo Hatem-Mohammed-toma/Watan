@@ -49,8 +49,7 @@ class ApiCommentController extends Controller
                 return $this->success($comments);
 
     }
-
-
+    
     public function acceptedComments()
     {
         $comments = Comment::with([
@@ -90,7 +89,7 @@ class ApiCommentController extends Controller
     }
     public function updateStatus(Request $request, $status, $id)
     {
-       
+
         $comment = Comment::find($id);
         if (!$comment) {
             return $this->error('Operation failed',400,'Comment not found');
@@ -106,7 +105,6 @@ class ApiCommentController extends Controller
         ]);
         return $this->success($comment);
     }
-
 
     public function deleteComment(Request $request, $id)
     {

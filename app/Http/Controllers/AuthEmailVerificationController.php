@@ -89,23 +89,7 @@ public function email_verification(Request $request)
             'message' => 'otp is used or false'
         ], 404);
 
-    // if (!$otpValidation->status) {
-    //     // OTP is not valid or expired
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'Invalid or expired OTP.'
-    //     ], 401);
-    // }
-    // // Find user and mark email as verified
-    // $user->update(['email_verified_at' => now()]);
-    // return response()->json([
-    //     'success' => true,
-    //     'message' => 'Email verified successfully.'
-    // ], 200);
-
-
-
-
+   
 }
 
 }
