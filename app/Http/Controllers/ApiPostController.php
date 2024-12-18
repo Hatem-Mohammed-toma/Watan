@@ -43,7 +43,8 @@ use ResponseGlobal ;
     {
         $posts = Post::select('id', 'title', 'content', 'status', 'media', 'user_id')
         ->where('status', 'pending')
-        ->with(['user:id,profile_photo']) // Load only profile photo from the User model
+        ->with(['user:id,name,profile_photo']) // Load only profile photo from the User model
+        ->orderBy('id', 'desc')
         ->get()
         ->map(function ($post) {
             if ($post->media) {
@@ -61,6 +62,8 @@ use ResponseGlobal ;
                     ? $post->user->profile_photo
                     : asset('storage/' . $post->user->profile_photo);
             }
+          //  $post->user_name = $post->user ? $post->user->name : null;
+
             return $post;
         });
 
@@ -68,36 +71,43 @@ use ResponseGlobal ;
 
     }
     // show all posts accepted
-    public function postuser()
-    {
-        // Query to get posts with status 'accepted'
-        $posts = Post::select('id', 'title', 'content', 'status', 'media', 'user_id')
-            ->where('status', 'accepted')
-            ->with(['user:id,profile_photo']) // Load only profile photo from the User model
-            ->get()
-            ->map(function ($post) {
-                // Transform media path to a full URL
-                if ($post->media) {
-                    $mediaPaths = json_decode($post->media, true);
-                    if (is_array($mediaPaths)) {
-                        $post->media = array_map(function ($path) {
-                            return asset('storage/' . $path);
-                        }, $mediaPaths);
-                    } else {
-                        $post->media = [asset('storage/' . $post->media)];
-                    }
+public function postuser()
+{
+    // Query to get posts with status 'accepted'
+    $posts = Post::select('id', 'title', 'content', 'status', 'media', 'user_id')
+        ->where('status', 'accepted')
+        ->with(['user:id,name,profile_photo']) // Load 'name' and 'profile_photo' from User model
+        ->orderBy('id', 'desc')
+        ->get()
+        ->map(function ($post) {
+            // Transform media path to a full URL
+            if ($post->media) {
+                $mediaPaths = json_decode($post->media, true);
+                if (is_array($mediaPaths)) {
+                    $post->media = array_map(function ($path) {
+                        return asset('storage/' . $path);
+                    }, $mediaPaths);
+                } else {
+                    $post->media = [asset('storage/' . $post->media)];
                 }
-                // Transform profile photo path to a full URL if it's not already a complete URL
-                if ($post->user && $post->user->profile_photo) {
-                     $post->user->profile_photo = Str::startsWith($post->user->profile_photo, 'http')
-                        ? $post->user->profile_photo
-                        :asset('storage/' . $post->user->profile_photo);
-                }
-                return $post;
-            });
+            }
 
-            return $this->success($posts);
-    }
+            // Transform profile photo path to a full URL if it's not already a complete URL
+            if ($post->user && $post->user->profile_photo) {
+                $post->user->profile_photo = Str::startsWith($post->user->profile_photo, 'http')
+                    ? $post->user->profile_photo
+                    : asset('storage/' . $post->user->profile_photo);
+            }
+
+            // // Add the user's name to the post
+            // $post->user_name = $post->user ? $post->user->name : null;
+
+            return $post;
+        });
+
+    return response()->json($posts);
+}
+
 ///   canceld and accepted by admin //
 public function update(Request $request,$status, $id)
 {
@@ -191,7 +201,8 @@ public function LatestNews()
             $query->where('user_type', 'admin'); // Filter posts created by admins
         })
         ->where('status', 'accepted') // Only include posts with 'accepted' status
-        ->with(['user:id,profile_photo']) // Load user's profile photo
+        ->with(['user:id,name,profile_photo']) // Load user's profile photo
+        ->orderBy('id', 'desc') // Order by ID in descending order (latest first)
         ->get()
         ->map(function ($post) {
             // Transform media path to a full URL
@@ -213,7 +224,7 @@ public function LatestNews()
             }
             return $post;
         });
-        return $this->success($posts);
 
+    return $this->success($posts);
 }
 }

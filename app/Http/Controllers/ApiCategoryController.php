@@ -37,13 +37,13 @@ use ResponseGlobal ;
     $category = null;
     if ($request->has('code')){
         $input = trim(strtolower($request->input('code')));
-        $category = Category::whereRaw('LOWER(code) = ?', [$input])->first();
+        $category = Category::whereRaw('LOWER(code) = ?',[$input])->first();
     }elseif ($request->has('name')) {
         $input = trim(strtolower($request->input('name')));
-        $category = Category::whereRaw('LOWER(name) = ?', [$input])->first();
+        $category = Category::whereRaw('LOWER(name) = ?',[$input])->first();
     }
     if (!$category) {
-        return $this->success( 'هذا المنتج ليس في المقاطعه') ;
+        return $this->success( 'هذا المنتج ليس في المقاطعه');
     }
         // Retrieve the products for this category (relationship)
         $products = $category->products;

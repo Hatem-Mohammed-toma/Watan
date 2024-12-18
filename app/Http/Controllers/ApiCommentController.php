@@ -31,25 +31,7 @@ class ApiCommentController extends Controller
         return $this->success($comment);
     }
 
-    public function pendingComments()
-    {
-        $comments = Comment::with(['user:id,profile_photo', 'post:id,title'])
-                           ->where('status', 'pending')
-                           ->get()
-                           ->map(function ($comment) {
-                               // Only add 'storage/' path if the profile photo is not a complete URL
-                               if ($comment->user && $comment->user->profile_photo) {
-                                   $comment->user->profile_photo = Str::startsWith($comment->user->profile_photo, 'http')
-                                       ? $comment->user->profile_photo
-                                       : asset('storage/' . $comment->user->profile_photo);
-                               }
-                               return $comment;
-                           });
-
-                return $this->success($comments);
-
-    }
-    
+    // all comenets
     public function acceptedComments()
     {
         $comments = Comment::with([
@@ -126,7 +108,6 @@ class ApiCommentController extends Controller
 
     public function update_user_comment(CommentRequest $request, $commentId)
     {
-
         $user = auth('api')->user();
         // Find the comment by its ID
         $comment = Comment::find($commentId);
@@ -144,7 +125,7 @@ class ApiCommentController extends Controller
         return $this->success($comment);
 
     }
-
+// show comments of posts
     public function commentsByPostId($postId)
     {
         // Query to get comments with status 'accepted' for a specific post
