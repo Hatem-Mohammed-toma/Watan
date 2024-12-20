@@ -130,6 +130,7 @@ Route::controller(ApiCommentController::class)->group(function(){
     Route::get('comments_posts/{postId}','commentsByPostId');
     Route::put('/comments/{commentId}','update_user_comment')->middleware('valid_auth');
 
+    Route::get('test','test');
 });
 
 

@@ -157,7 +157,10 @@ class ApiCommentController extends Controller
 
     return $this->success($comments);
 
+    }
 
+    public function test(){
+        return 'mostafa' ;
     }
 
 }
