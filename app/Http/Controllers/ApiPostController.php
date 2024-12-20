@@ -105,8 +105,8 @@ public function postuser()
             return $post;
         });
 
-    return response()->json($posts);
-}
+        return $this->success($posts);
+    }
 
 ///   canceld and accepted by admin //
 public function update(Request $request,$status, $id)
